@@ -1,15 +1,14 @@
 import unittest
-from emuobject.Emu import Emu, MissingAllowedFieldError, MissingForbiddenFieldError
-
+from emuobject.Emu import Emu
+from emuobject.EmuExceptions import MissingAllowedFieldError, MissingForbiddenFieldError
 
 class Person(Emu):
     def __init__(self, fields) -> None:
         super().__init__(fields)
 
     @classmethod
-    def _definitions(cls):
+    def definitions(cls):
         return {"name": str, "age": int, "description": str}
-
 
 class TestBasic(unittest.TestCase):
     ovid = Person({"name": "Ovid", "age": 42})
@@ -38,7 +37,6 @@ class TestBasic(unittest.TestCase):
 
         with self.assertRaises(MissingForbiddenFieldError):
             self.ovid.get("address")
-
 
 if __name__ == "__main__":
     unittest.main()
