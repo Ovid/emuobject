@@ -9,15 +9,18 @@ class EmuError(Exception):
         self.message = message
 
     def __str__(self) -> str:
-        return colored(self.message, 'red')
+        return colored(self.message, "red")
+
 
 class MissingAllowedFieldError(EmuError):
     def __init__(self, field) -> None:
         super().__init__(f"Field '{field}; is allowed, but not present")
 
+
 class MissingForbiddenFieldError(EmuError):
     def __init__(self, field) -> None:
         super().__init__(f"Field '{field}' was requested, but not allowed")
+
 
 class Emu(ABC):
     def __init__(self, fields: dict) -> None:
@@ -33,9 +36,9 @@ class Emu(ABC):
                 raise MissingAllowedFieldError(field)
             raise MissingForbiddenFieldError(field)
         return self._fields[field]
-    
+
     def allows(self, field: str) -> bool:
         return field in self._definitions()
-    
+
     def has(self, field) -> bool:
         return field in self._fields
