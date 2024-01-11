@@ -1,5 +1,5 @@
 =====================
-The emubject Project
+The emuobject Project
 =====================
 --------------------------------------
 Type-safe immutable objects for Python
