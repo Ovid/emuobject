@@ -33,43 +33,121 @@ from emuobject.EmuExceptions import MissingAllowedFieldError, MissingForbiddenFi
 
 
 class Emu(ABC):
+    &#34;&#34;&#34;
+    Type-safe immutable objects in Python.
+
+    This is a base class for creating immutable objects. It&#39;s designed to be type-safe and easy to use.
+
+    There are no public attributes. Instead, you must use the get() method to retrieve the value of a field.
+
+    Basic usage:
+
+    &gt;&gt;&gt; class Person(Emu):
+    ...     @classmethod
+    ...     def schema(cls):
+    ...         # schema definition must be a valid cerberus schema
+    ...         return {
+    ...             &#34;name&#34;: {&#34;type&#34;: &#34;string&#34;},
+    ...             &#34;age&#34;: {&#34;type&#34;: &#34;integer&#34;, &#34;min&#34;: 0},
+    ...             &#34;description&#34;: {&#34;type&#34;: &#34;string&#34;, &#34;required&#34;: False},
+    ...         }
+    ...
+    &gt;&gt;&gt; ovid = Person({&#34;name&#34;: &#34;Ovid&#34;, &#34;age&#34;: 42})
+    &gt;&gt;&gt; ovid.get(&#34;name&#34;)
+    &#39;Ovid&#39;
+    &gt;&gt;&gt; ovid.get(&#34;age&#34;)
+    42
+    &gt;&gt;&gt; ovid.get(&#34;description&#34;)
+    Traceback (most recent call last):
+        ...
+    &#34;&#34;&#34;
+
     def __init__(self, fields: dict) -&gt; None:
-        &#34;&#34;&#34;Creates an Emu object. The fields must be a dictionary. The schema method must be overridden in a subclass.
-        :param fields: A dictionary of field names and their values.&#34;&#34;&#34;
         self._fields = fields
         self._validator = Validator(self.schema(), require_all=True)
+
         if not self._validator.validate(self._fields):
             raise TypeError(&#34;Invalid fields&#34;)
 
     @abstractclassmethod
     def schema(cls) -&gt; dict:
-        &#34;&#34;&#34;This should be overridden in a subclass to return a dictionary of field names and their types.&#34;&#34;&#34;
+        &#34;&#34;&#34;
+        This must be overridden in a subclass to return a dictionary of field names and their types.
+        The syntax should match that of Cerberus.
+
+        Args:
+            None
+
+        Returns:
+            A dictionary of field names and their types in the form of a cerberus schema.
+        &#34;&#34;&#34;
         pass
 
     def definition(self, field) -&gt; dict or None:
-        &#34;&#34;&#34;Returns the definition for a single field. Returns None if the field is not defined.:w
-        :param key: The field name&#34;&#34;&#34;
+        &#34;&#34;&#34;
+        Returns the definition for a single field. Returns None if the field is not defined.
+
+        Do not override this method.
+
+        Args:
+            field: The field name
+
+        Returns:
+            A dictionary of the field&#39;s definition, or None if the field is not allowed.
+        &#34;&#34;&#34;
         if field in self.schema():
             return self.schema()[field]
         return None
 
     def get(self, field: str):
-        &#34;&#34;&#34;Returns the value of the field, or raises an exception if the field is not allowed or not present.
-        :param field: The field name&#34;&#34;&#34;
+        &#34;&#34;&#34;
+        Returns the value of the field, or raises an exception if the field is not allowed or not present.
+
+        Do not override this method.
+
+        Args:
+            field: The field name you wish to retrieve.
+
+        Returns:
+            The value of the field, if it exists. Return type is determined by the schema.
+
+        Raises:
+            MissingAllowedFieldError: If the field is allowed but not present.
+            MissingForbiddenFieldError: If the field is not allowed.
+        &#34;&#34;&#34;
         if not self.has(field):
             if self.allows(field):
                 raise MissingAllowedFieldError(field)
             raise MissingForbiddenFieldError(field)
         return self._fields[field]
 
-    def allows(self, field: str) -&gt; bool:
-        &#34;&#34;&#34;Returns True if the field is allowed (e.g., it&#39;s defined in the schema method), False otherwise.
-        :param field: The field name&#34;&#34;&#34;
-        return field in self.schema()
+    @classmethod
+    def allows(cls, field: str) -&gt; bool:
+        &#34;&#34;&#34;
+        Returns True if the field is allowed (e.g., it exists in the schema()), False otherwise.
+
+        Do not override this method.
+
+        Args:
+            field: The field name you wish to check
+
+        Returns:
+            True if the field is allowed, False otherwise.
+        &#34;&#34;&#34;
+        return field in cls.schema()
 
     def has(self, field: str) -&gt; bool:
-        &#34;&#34;&#34;Returns True if the field is present in the object, False otherwise.
-        :param field: The field name&#34;&#34;&#34;
+        &#34;&#34;&#34;
+        Returns True if the field is present in the object, False otherwise.
+
+        Do not override this method.
+
+        Args:
+            field: The field name
+
+        Returns:
+            True if the field is present, False otherwise.
+        &#34;&#34;&#34;
         return field in self._fields</code></pre>
 </details>
 </section>
@@ -87,52 +165,149 @@ class Emu(ABC):
 <span>(</span><span>fields: dict)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Helper class that provides a standard way to create an ABC using
-inheritance.</p>
-<p>Creates an Emu object. The fields must be a dictionary. The schema method must be overridden in a subclass.
-:param fields: A dictionary of field names and their values.</p></div>
+<div class="desc"><p>Type-safe immutable objects in Python.</p>
+<p>This is a base class for creating immutable objects. It's designed to be type-safe and easy to use.</p>
+<p>There are no public attributes. Instead, you must use the get() method to retrieve the value of a field.</p>
+<p>Basic usage:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; class Person(Emu):
+...     @classmethod
+...     def schema(cls):
+...         # schema definition must be a valid cerberus schema
+...         return {
+...             &quot;name&quot;: {&quot;type&quot;: &quot;string&quot;},
+...             &quot;age&quot;: {&quot;type&quot;: &quot;integer&quot;, &quot;min&quot;: 0},
+...             &quot;description&quot;: {&quot;type&quot;: &quot;string&quot;, &quot;required&quot;: False},
+...         }
+...
+&gt;&gt;&gt; ovid = Person({&quot;name&quot;: &quot;Ovid&quot;, &quot;age&quot;: 42})
+&gt;&gt;&gt; ovid.get(&quot;name&quot;)
+'Ovid'
+&gt;&gt;&gt; ovid.get(&quot;age&quot;)
+42
+&gt;&gt;&gt; ovid.get(&quot;description&quot;)
+Traceback (most recent call last):
+    ...
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Emu(ABC):
+    &#34;&#34;&#34;
+    Type-safe immutable objects in Python.
+
+    This is a base class for creating immutable objects. It&#39;s designed to be type-safe and easy to use.
+
+    There are no public attributes. Instead, you must use the get() method to retrieve the value of a field.
+
+    Basic usage:
+
+    &gt;&gt;&gt; class Person(Emu):
+    ...     @classmethod
+    ...     def schema(cls):
+    ...         # schema definition must be a valid cerberus schema
+    ...         return {
+    ...             &#34;name&#34;: {&#34;type&#34;: &#34;string&#34;},
+    ...             &#34;age&#34;: {&#34;type&#34;: &#34;integer&#34;, &#34;min&#34;: 0},
+    ...             &#34;description&#34;: {&#34;type&#34;: &#34;string&#34;, &#34;required&#34;: False},
+    ...         }
+    ...
+    &gt;&gt;&gt; ovid = Person({&#34;name&#34;: &#34;Ovid&#34;, &#34;age&#34;: 42})
+    &gt;&gt;&gt; ovid.get(&#34;name&#34;)
+    &#39;Ovid&#39;
+    &gt;&gt;&gt; ovid.get(&#34;age&#34;)
+    42
+    &gt;&gt;&gt; ovid.get(&#34;description&#34;)
+    Traceback (most recent call last):
+        ...
+    &#34;&#34;&#34;
+
     def __init__(self, fields: dict) -&gt; None:
-        &#34;&#34;&#34;Creates an Emu object. The fields must be a dictionary. The schema method must be overridden in a subclass.
-        :param fields: A dictionary of field names and their values.&#34;&#34;&#34;
         self._fields = fields
         self._validator = Validator(self.schema(), require_all=True)
+
         if not self._validator.validate(self._fields):
             raise TypeError(&#34;Invalid fields&#34;)
 
     @abstractclassmethod
     def schema(cls) -&gt; dict:
-        &#34;&#34;&#34;This should be overridden in a subclass to return a dictionary of field names and their types.&#34;&#34;&#34;
+        &#34;&#34;&#34;
+        This must be overridden in a subclass to return a dictionary of field names and their types.
+        The syntax should match that of Cerberus.
+
+        Args:
+            None
+
+        Returns:
+            A dictionary of field names and their types in the form of a cerberus schema.
+        &#34;&#34;&#34;
         pass
 
     def definition(self, field) -&gt; dict or None:
-        &#34;&#34;&#34;Returns the definition for a single field. Returns None if the field is not defined.:w
-        :param key: The field name&#34;&#34;&#34;
+        &#34;&#34;&#34;
+        Returns the definition for a single field. Returns None if the field is not defined.
+
+        Do not override this method.
+
+        Args:
+            field: The field name
+
+        Returns:
+            A dictionary of the field&#39;s definition, or None if the field is not allowed.
+        &#34;&#34;&#34;
         if field in self.schema():
             return self.schema()[field]
         return None
 
     def get(self, field: str):
-        &#34;&#34;&#34;Returns the value of the field, or raises an exception if the field is not allowed or not present.
-        :param field: The field name&#34;&#34;&#34;
+        &#34;&#34;&#34;
+        Returns the value of the field, or raises an exception if the field is not allowed or not present.
+
+        Do not override this method.
+
+        Args:
+            field: The field name you wish to retrieve.
+
+        Returns:
+            The value of the field, if it exists. Return type is determined by the schema.
+
+        Raises:
+            MissingAllowedFieldError: If the field is allowed but not present.
+            MissingForbiddenFieldError: If the field is not allowed.
+        &#34;&#34;&#34;
         if not self.has(field):
             if self.allows(field):
                 raise MissingAllowedFieldError(field)
             raise MissingForbiddenFieldError(field)
         return self._fields[field]
 
-    def allows(self, field: str) -&gt; bool:
-        &#34;&#34;&#34;Returns True if the field is allowed (e.g., it&#39;s defined in the schema method), False otherwise.
-        :param field: The field name&#34;&#34;&#34;
-        return field in self.schema()
+    @classmethod
+    def allows(cls, field: str) -&gt; bool:
+        &#34;&#34;&#34;
+        Returns True if the field is allowed (e.g., it exists in the schema()), False otherwise.
+
+        Do not override this method.
+
+        Args:
+            field: The field name you wish to check
+
+        Returns:
+            True if the field is allowed, False otherwise.
+        &#34;&#34;&#34;
+        return field in cls.schema()
 
     def has(self, field: str) -&gt; bool:
-        &#34;&#34;&#34;Returns True if the field is present in the object, False otherwise.
-        :param field: The field name&#34;&#34;&#34;
+        &#34;&#34;&#34;
+        Returns True if the field is present in the object, False otherwise.
+
+        Do not override this method.
+
+        Args:
+            field: The field name
+
+        Returns:
+            True if the field is present, False otherwise.
+        &#34;&#34;&#34;
         return field in self._fields</code></pre>
 </details>
 <h3>Ancestors</h3>
@@ -141,53 +316,100 @@ inheritance.</p>
 </ul>
 <h3>Static methods</h3>
 <dl>
+<dt id="emuobject.Emu.Emu.allows"><code class="name flex">
+<span>def <span class="ident">allows</span></span>(<span>field: str) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns True if the field is allowed (e.g., it exists in the schema()), False otherwise.</p>
+<p>Do not override this method.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>field</code></strong></dt>
+<dd>The field name you wish to check</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>True if the field is allowed, False otherwise.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@classmethod
+def allows(cls, field: str) -&gt; bool:
+    &#34;&#34;&#34;
+    Returns True if the field is allowed (e.g., it exists in the schema()), False otherwise.
+
+    Do not override this method.
+
+    Args:
+        field: The field name you wish to check
+
+    Returns:
+        True if the field is allowed, False otherwise.
+    &#34;&#34;&#34;
+    return field in cls.schema()</code></pre>
+</details>
+</dd>
 <dt id="emuobject.Emu.Emu.schema"><code class="name flex">
 <span>def <span class="ident">schema</span></span>(<span>) ‑> dict</span>
 </code></dt>
 <dd>
-<div class="desc"><p>This should be overridden in a subclass to return a dictionary of field names and their types.</p></div>
+<div class="desc"><p>This must be overridden in a subclass to return a dictionary of field names and their types.
+The syntax should match that of Cerberus.</p>
+<h2 id="args">Args</h2>
+<p>None</p>
+<h2 id="returns">Returns</h2>
+<p>A dictionary of field names and their types in the form of a cerberus schema.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@abstractclassmethod
 def schema(cls) -&gt; dict:
-    &#34;&#34;&#34;This should be overridden in a subclass to return a dictionary of field names and their types.&#34;&#34;&#34;
+    &#34;&#34;&#34;
+    This must be overridden in a subclass to return a dictionary of field names and their types.
+    The syntax should match that of Cerberus.
+
+    Args:
+        None
+
+    Returns:
+        A dictionary of field names and their types in the form of a cerberus schema.
+    &#34;&#34;&#34;
     pass</code></pre>
 </details>
 </dd>
 </dl>
 <h3>Methods</h3>
 <dl>
-<dt id="emuobject.Emu.Emu.allows"><code class="name flex">
-<span>def <span class="ident">allows</span></span>(<span>self, field: str) ‑> bool</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Returns True if the field is allowed (e.g., it's defined in the schema method), False otherwise.
-:param field: The field name</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def allows(self, field: str) -&gt; bool:
-    &#34;&#34;&#34;Returns True if the field is allowed (e.g., it&#39;s defined in the schema method), False otherwise.
-    :param field: The field name&#34;&#34;&#34;
-    return field in self.schema()</code></pre>
-</details>
-</dd>
 <dt id="emuobject.Emu.Emu.definition"><code class="name flex">
 <span>def <span class="ident">definition</span></span>(<span>self, field) ‑> dict</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Returns the definition for a single field. Returns None if the field is not defined.:w
-:param key: The field name</p></div>
+<div class="desc"><p>Returns the definition for a single field. Returns None if the field is not defined.</p>
+<p>Do not override this method.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>field</code></strong></dt>
+<dd>The field name</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A dictionary of the field's definition, or None if the field is not allowed.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def definition(self, field) -&gt; dict or None:
-    &#34;&#34;&#34;Returns the definition for a single field. Returns None if the field is not defined.:w
-    :param key: The field name&#34;&#34;&#34;
+    &#34;&#34;&#34;
+    Returns the definition for a single field. Returns None if the field is not defined.
+
+    Do not override this method.
+
+    Args:
+        field: The field name
+
+    Returns:
+        A dictionary of the field&#39;s definition, or None if the field is not allowed.
+    &#34;&#34;&#34;
     if field in self.schema():
         return self.schema()[field]
     return None</code></pre>
@@ -197,15 +419,42 @@ def schema(cls) -&gt; dict:
 <span>def <span class="ident">get</span></span>(<span>self, field: str)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Returns the value of the field, or raises an exception if the field is not allowed or not present.
-:param field: The field name</p></div>
+<div class="desc"><p>Returns the value of the field, or raises an exception if the field is not allowed or not present.</p>
+<p>Do not override this method.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>field</code></strong></dt>
+<dd>The field name you wish to retrieve.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The value of the field, if it exists. Return type is determined by the schema.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>MissingAllowedFieldError</code></dt>
+<dd>If the field is allowed but not present.</dd>
+<dt><code>MissingForbiddenFieldError</code></dt>
+<dd>If the field is not allowed.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get(self, field: str):
-    &#34;&#34;&#34;Returns the value of the field, or raises an exception if the field is not allowed or not present.
-    :param field: The field name&#34;&#34;&#34;
+    &#34;&#34;&#34;
+    Returns the value of the field, or raises an exception if the field is not allowed or not present.
+
+    Do not override this method.
+
+    Args:
+        field: The field name you wish to retrieve.
+
+    Returns:
+        The value of the field, if it exists. Return type is determined by the schema.
+
+    Raises:
+        MissingAllowedFieldError: If the field is allowed but not present.
+        MissingForbiddenFieldError: If the field is not allowed.
+    &#34;&#34;&#34;
     if not self.has(field):
         if self.allows(field):
             raise MissingAllowedFieldError(field)
@@ -217,15 +466,31 @@ def schema(cls) -&gt; dict:
 <span>def <span class="ident">has</span></span>(<span>self, field: str) ‑> bool</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Returns True if the field is present in the object, False otherwise.
-:param field: The field name</p></div>
+<div class="desc"><p>Returns True if the field is present in the object, False otherwise.</p>
+<p>Do not override this method.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>field</code></strong></dt>
+<dd>The field name</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>True if the field is present, False otherwise.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def has(self, field: str) -&gt; bool:
-    &#34;&#34;&#34;Returns True if the field is present in the object, False otherwise.
-    :param field: The field name&#34;&#34;&#34;
+    &#34;&#34;&#34;
+    Returns True if the field is present in the object, False otherwise.
+
+    Do not override this method.
+
+    Args:
+        field: The field name
+
+    Returns:
+        True if the field is present, False otherwise.
+    &#34;&#34;&#34;
     return field in self._fields</code></pre>
 </details>
 </dd>

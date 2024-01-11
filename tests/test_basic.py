@@ -4,9 +4,6 @@ from emuobject.EmuExceptions import MissingAllowedFieldError, MissingForbiddenFi
 
 
 class Person(Emu):
-    def __init__(self, fields) -> None:
-        super().__init__(fields)
-
     @classmethod
     def schema(cls):
         return {

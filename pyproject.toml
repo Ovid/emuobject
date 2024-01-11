@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "emuobject"
+version = "0.1.0"
+description = "A type-safe immutable object for Python."
+authors = ["Ovid <curtis.poe@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+Cerberus = "^1.3.5"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
