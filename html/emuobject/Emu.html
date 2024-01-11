@@ -27,43 +27,35 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from abc import ABC, abstractclassmethod
+from cerberus import Validator
 from termcolor import colored
-
-# Need to have definitions for the fields have required and optional fields
-
-
-class EmuError(Exception):
-    &#34;&#34;&#34;Base class for exceptions in this module.&#34;&#34;&#34;
-    def __init__(self, message: str) -&gt; None:
-        self.message = message
-
-    def __str__(self) -&gt; str:
-        return colored(self.message, &#34;red&#34;)
-
-
-class MissingAllowedFieldError(EmuError):
-    &#34;&#34;&#34;Exception raised when a requested field is allowed, but not present in the object.&#34;&#34;&#34;
-    def __init__(self, field) -&gt; None:
-        super().__init__(f&#34;Field &#39;{field}; is allowed, but not present&#34;)
-
-
-class MissingForbiddenFieldError(EmuError):
-    &#34;&#34;&#34;Exception raised when a requested field is not allowed.&#34;&#34;&#34;
-    def __init__(self, field) -&gt; None:
-        super().__init__(f&#34;Field &#39;{field}&#39; was requested, but not allowed&#34;)
+from emuobject.EmuExceptions import MissingAllowedFieldError, MissingForbiddenFieldError
 
 
 class Emu(ABC):
     def __init__(self, fields: dict) -&gt; None:
+        &#34;&#34;&#34;Creates an Emu object. The fields must be a dictionary. The schema method must be overridden in a subclass.
+        :param fields: A dictionary of field names and their values.&#34;&#34;&#34;
         self._fields = fields
+        self._validator = Validator(self.schema(), require_all=True)
+        if not self._validator.validate(self._fields):
+            raise TypeError(&#34;Invalid fields&#34;)
 
     @abstractclassmethod
-    def definitions(cls) -&gt; dict:
+    def schema(cls) -&gt; dict:
         &#34;&#34;&#34;This should be overridden in a subclass to return a dictionary of field names and their types.&#34;&#34;&#34;
         pass
 
+    def definition(self, field) -&gt; dict or None:
+        &#34;&#34;&#34;Returns the definition for a single field. Returns None if the field is not defined.:w
+        :param key: The field name&#34;&#34;&#34;
+        if field in self.schema():
+            return self.schema()[field]
+        return None
+
     def get(self, field: str):
-        &#34;&#34;&#34;Returns the value of the field, or raises an exception if the field is not allowed or not present.&#34;&#34;&#34;
+        &#34;&#34;&#34;Returns the value of the field, or raises an exception if the field is not allowed or not present.
+        :param field: The field name&#34;&#34;&#34;
         if not self.has(field):
             if self.allows(field):
                 raise MissingAllowedFieldError(field)
@@ -71,11 +63,13 @@ class Emu(ABC):
         return self._fields[field]
 
     def allows(self, field: str) -&gt; bool:
-        &#34;&#34;&#34;Returns True if the field is allowed (e.g., it&#39;s defined in definitions), False otherwise.&#34;&#34;&#34;
-        return field in self.definitions()
+        &#34;&#34;&#34;Returns True if the field is allowed (e.g., it&#39;s defined in the schema method), False otherwise.
+        :param field: The field name&#34;&#34;&#34;
+        return field in self.schema()
 
-    def has(self, field) -&gt; bool:
-        &#34;&#34;&#34;Returns True if the field is present in the object, False otherwise.&#34;&#34;&#34;
+    def has(self, field: str) -&gt; bool:
+        &#34;&#34;&#34;Returns True if the field is present in the object, False otherwise.
+        :param field: The field name&#34;&#34;&#34;
         return field in self._fields</code></pre>
 </details>
 </section>
@@ -94,22 +88,37 @@ class Emu(ABC):
 </code></dt>
 <dd>
 <div class="desc"><p>Helper class that provides a standard way to create an ABC using
-inheritance.</p></div>
+inheritance.</p>
+<p>Creates an Emu object. The fields must be a dictionary. The schema method must be overridden in a subclass.
+:param fields: A dictionary of field names and their values.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Emu(ABC):
     def __init__(self, fields: dict) -&gt; None:
+        &#34;&#34;&#34;Creates an Emu object. The fields must be a dictionary. The schema method must be overridden in a subclass.
+        :param fields: A dictionary of field names and their values.&#34;&#34;&#34;
         self._fields = fields
+        self._validator = Validator(self.schema(), require_all=True)
+        if not self._validator.validate(self._fields):
+            raise TypeError(&#34;Invalid fields&#34;)
 
     @abstractclassmethod
-    def definitions(cls) -&gt; dict:
+    def schema(cls) -&gt; dict:
         &#34;&#34;&#34;This should be overridden in a subclass to return a dictionary of field names and their types.&#34;&#34;&#34;
         pass
 
+    def definition(self, field) -&gt; dict or None:
+        &#34;&#34;&#34;Returns the definition for a single field. Returns None if the field is not defined.:w
+        :param key: The field name&#34;&#34;&#34;
+        if field in self.schema():
+            return self.schema()[field]
+        return None
+
     def get(self, field: str):
-        &#34;&#34;&#34;Returns the value of the field, or raises an exception if the field is not allowed or not present.&#34;&#34;&#34;
+        &#34;&#34;&#34;Returns the value of the field, or raises an exception if the field is not allowed or not present.
+        :param field: The field name&#34;&#34;&#34;
         if not self.has(field):
             if self.allows(field):
                 raise MissingAllowedFieldError(field)
@@ -117,11 +126,13 @@ inheritance.</p></div>
         return self._fields[field]
 
     def allows(self, field: str) -&gt; bool:
-        &#34;&#34;&#34;Returns True if the field is allowed (e.g., it&#39;s defined in definitions), False otherwise.&#34;&#34;&#34;
-        return field in self.definitions()
+        &#34;&#34;&#34;Returns True if the field is allowed (e.g., it&#39;s defined in the schema method), False otherwise.
+        :param field: The field name&#34;&#34;&#34;
+        return field in self.schema()
 
-    def has(self, field) -&gt; bool:
-        &#34;&#34;&#34;Returns True if the field is present in the object, False otherwise.&#34;&#34;&#34;
+    def has(self, field: str) -&gt; bool:
+        &#34;&#34;&#34;Returns True if the field is present in the object, False otherwise.
+        :param field: The field name&#34;&#34;&#34;
         return field in self._fields</code></pre>
 </details>
 <h3>Ancestors</h3>
@@ -130,8 +141,8 @@ inheritance.</p></div>
 </ul>
 <h3>Static methods</h3>
 <dl>
-<dt id="emuobject.Emu.Emu.definitions"><code class="name flex">
-<span>def <span class="ident">definitions</span></span>(<span>) ‑> dict</span>
+<dt id="emuobject.Emu.Emu.schema"><code class="name flex">
+<span>def <span class="ident">schema</span></span>(<span>) ‑> dict</span>
 </code></dt>
 <dd>
 <div class="desc"><p>This should be overridden in a subclass to return a dictionary of field names and their types.</p></div>
@@ -140,7 +151,7 @@ inheritance.</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@abstractclassmethod
-def definitions(cls) -&gt; dict:
+def schema(cls) -&gt; dict:
     &#34;&#34;&#34;This should be overridden in a subclass to return a dictionary of field names and their types.&#34;&#34;&#34;
     pass</code></pre>
 </details>
@@ -152,27 +163,49 @@ def definitions(cls) -&gt; dict:
 <span>def <span class="ident">allows</span></span>(<span>self, field: str) ‑> bool</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Returns True if the field is allowed (e.g., it's defined in definitions), False otherwise.</p></div>
+<div class="desc"><p>Returns True if the field is allowed (e.g., it's defined in the schema method), False otherwise.
+:param field: The field name</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def allows(self, field: str) -&gt; bool:
-    &#34;&#34;&#34;Returns True if the field is allowed (e.g., it&#39;s defined in definitions), False otherwise.&#34;&#34;&#34;
-    return field in self.definitions()</code></pre>
+    &#34;&#34;&#34;Returns True if the field is allowed (e.g., it&#39;s defined in the schema method), False otherwise.
+    :param field: The field name&#34;&#34;&#34;
+    return field in self.schema()</code></pre>
+</details>
+</dd>
+<dt id="emuobject.Emu.Emu.definition"><code class="name flex">
+<span>def <span class="ident">definition</span></span>(<span>self, field) ‑> dict</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the definition for a single field. Returns None if the field is not defined.:w
+:param key: The field name</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def definition(self, field) -&gt; dict or None:
+    &#34;&#34;&#34;Returns the definition for a single field. Returns None if the field is not defined.:w
+    :param key: The field name&#34;&#34;&#34;
+    if field in self.schema():
+        return self.schema()[field]
+    return None</code></pre>
 </details>
 </dd>
 <dt id="emuobject.Emu.Emu.get"><code class="name flex">
 <span>def <span class="ident">get</span></span>(<span>self, field: str)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Returns the value of the field, or raises an exception if the field is not allowed or not present.</p></div>
+<div class="desc"><p>Returns the value of the field, or raises an exception if the field is not allowed or not present.
+:param field: The field name</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get(self, field: str):
-    &#34;&#34;&#34;Returns the value of the field, or raises an exception if the field is not allowed or not present.&#34;&#34;&#34;
+    &#34;&#34;&#34;Returns the value of the field, or raises an exception if the field is not allowed or not present.
+    :param field: The field name&#34;&#34;&#34;
     if not self.has(field):
         if self.allows(field):
             raise MissingAllowedFieldError(field)
@@ -181,93 +214,22 @@ def definitions(cls) -&gt; dict:
 </details>
 </dd>
 <dt id="emuobject.Emu.Emu.has"><code class="name flex">
-<span>def <span class="ident">has</span></span>(<span>self, field) ‑> bool</span>
+<span>def <span class="ident">has</span></span>(<span>self, field: str) ‑> bool</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Returns True if the field is present in the object, False otherwise.</p></div>
+<div class="desc"><p>Returns True if the field is present in the object, False otherwise.
+:param field: The field name</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def has(self, field) -&gt; bool:
-    &#34;&#34;&#34;Returns True if the field is present in the object, False otherwise.&#34;&#34;&#34;
+<pre><code class="python">def has(self, field: str) -&gt; bool:
+    &#34;&#34;&#34;Returns True if the field is present in the object, False otherwise.
+    :param field: The field name&#34;&#34;&#34;
     return field in self._fields</code></pre>
 </details>
 </dd>
 </dl>
-</dd>
-<dt id="emuobject.Emu.EmuError"><code class="flex name class">
-<span>class <span class="ident">EmuError</span></span>
-<span>(</span><span>message: str)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Base class for exceptions in this module.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class EmuError(Exception):
-    &#34;&#34;&#34;Base class for exceptions in this module.&#34;&#34;&#34;
-    def __init__(self, message: str) -&gt; None:
-        self.message = message
-
-    def __str__(self) -&gt; str:
-        return colored(self.message, &#34;red&#34;)</code></pre>
-</details>
-<h3>Ancestors</h3>
-<ul class="hlist">
-<li>builtins.Exception</li>
-<li>builtins.BaseException</li>
-</ul>
-<h3>Subclasses</h3>
-<ul class="hlist">
-<li><a title="emuobject.Emu.MissingAllowedFieldError" href="#emuobject.Emu.MissingAllowedFieldError">MissingAllowedFieldError</a></li>
-<li><a title="emuobject.Emu.MissingForbiddenFieldError" href="#emuobject.Emu.MissingForbiddenFieldError">MissingForbiddenFieldError</a></li>
-</ul>
-</dd>
-<dt id="emuobject.Emu.MissingAllowedFieldError"><code class="flex name class">
-<span>class <span class="ident">MissingAllowedFieldError</span></span>
-<span>(</span><span>field)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Exception raised when a requested field is allowed, but not present in the object.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class MissingAllowedFieldError(EmuError):
-    &#34;&#34;&#34;Exception raised when a requested field is allowed, but not present in the object.&#34;&#34;&#34;
-    def __init__(self, field) -&gt; None:
-        super().__init__(f&#34;Field &#39;{field}; is allowed, but not present&#34;)</code></pre>
-</details>
-<h3>Ancestors</h3>
-<ul class="hlist">
-<li><a title="emuobject.Emu.EmuError" href="#emuobject.Emu.EmuError">EmuError</a></li>
-<li>builtins.Exception</li>
-<li>builtins.BaseException</li>
-</ul>
-</dd>
-<dt id="emuobject.Emu.MissingForbiddenFieldError"><code class="flex name class">
-<span>class <span class="ident">MissingForbiddenFieldError</span></span>
-<span>(</span><span>field)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Exception raised when a requested field is not allowed.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class MissingForbiddenFieldError(EmuError):
-    &#34;&#34;&#34;Exception raised when a requested field is not allowed.&#34;&#34;&#34;
-    def __init__(self, field) -&gt; None:
-        super().__init__(f&#34;Field &#39;{field}&#39; was requested, but not allowed&#34;)</code></pre>
-</details>
-<h3>Ancestors</h3>
-<ul class="hlist">
-<li><a title="emuobject.Emu.EmuError" href="#emuobject.Emu.EmuError">EmuError</a></li>
-<li>builtins.Exception</li>
-<li>builtins.BaseException</li>
-</ul>
 </dd>
 </dl>
 </section>
@@ -289,19 +251,11 @@ def definitions(cls) -&gt; dict:
 <h4><code><a title="emuobject.Emu.Emu" href="#emuobject.Emu.Emu">Emu</a></code></h4>
 <ul class="">
 <li><code><a title="emuobject.Emu.Emu.allows" href="#emuobject.Emu.Emu.allows">allows</a></code></li>
-<li><code><a title="emuobject.Emu.Emu.definitions" href="#emuobject.Emu.Emu.definitions">definitions</a></code></li>
+<li><code><a title="emuobject.Emu.Emu.definition" href="#emuobject.Emu.Emu.definition">definition</a></code></li>
 <li><code><a title="emuobject.Emu.Emu.get" href="#emuobject.Emu.Emu.get">get</a></code></li>
 <li><code><a title="emuobject.Emu.Emu.has" href="#emuobject.Emu.Emu.has">has</a></code></li>
+<li><code><a title="emuobject.Emu.Emu.schema" href="#emuobject.Emu.Emu.schema">schema</a></code></li>
 </ul>
-</li>
-<li>
-<h4><code><a title="emuobject.Emu.EmuError" href="#emuobject.Emu.EmuError">EmuError</a></code></h4>
-</li>
-<li>
-<h4><code><a title="emuobject.Emu.MissingAllowedFieldError" href="#emuobject.Emu.MissingAllowedFieldError">MissingAllowedFieldError</a></code></h4>
-</li>
-<li>
-<h4><code><a title="emuobject.Emu.MissingForbiddenFieldError" href="#emuobject.Emu.MissingForbiddenFieldError">MissingForbiddenFieldError</a></code></h4>
 </li>
 </ul>
 </li>
