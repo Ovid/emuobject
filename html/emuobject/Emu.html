@@ -121,7 +121,8 @@ class Emu(ABC):
             raise MissingForbiddenFieldError(field)
         return self._fields[field]
 
-    def allows(self, field: str) -&gt; bool:
+    @classmethod
+    def allows(cls, field: str) -&gt; bool:
         &#34;&#34;&#34;
         Returns True if the field is allowed (e.g., it exists in the schema()), False otherwise.
 
@@ -133,7 +134,7 @@ class Emu(ABC):
         Returns:
             True if the field is allowed, False otherwise.
         &#34;&#34;&#34;
-        return field in self.schema()
+        return field in cls.schema()
 
     def has(self, field: str) -&gt; bool:
         &#34;&#34;&#34;
@@ -280,7 +281,8 @@ Traceback (most recent call last):
             raise MissingForbiddenFieldError(field)
         return self._fields[field]
 
-    def allows(self, field: str) -&gt; bool:
+    @classmethod
+    def allows(cls, field: str) -&gt; bool:
         &#34;&#34;&#34;
         Returns True if the field is allowed (e.g., it exists in the schema()), False otherwise.
 
@@ -292,7 +294,7 @@ Traceback (most recent call last):
         Returns:
             True if the field is allowed, False otherwise.
         &#34;&#34;&#34;
-        return field in self.schema()
+        return field in cls.schema()
 
     def has(self, field: str) -&gt; bool:
         &#34;&#34;&#34;
@@ -314,6 +316,39 @@ Traceback (most recent call last):
 </ul>
 <h3>Static methods</h3>
 <dl>
+<dt id="emuobject.Emu.Emu.allows"><code class="name flex">
+<span>def <span class="ident">allows</span></span>(<span>field: str) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns True if the field is allowed (e.g., it exists in the schema()), False otherwise.</p>
+<p>Do not override this method.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>field</code></strong></dt>
+<dd>The field name you wish to check</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>True if the field is allowed, False otherwise.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@classmethod
+def allows(cls, field: str) -&gt; bool:
+    &#34;&#34;&#34;
+    Returns True if the field is allowed (e.g., it exists in the schema()), False otherwise.
+
+    Do not override this method.
+
+    Args:
+        field: The field name you wish to check
+
+    Returns:
+        True if the field is allowed, False otherwise.
+    &#34;&#34;&#34;
+    return field in cls.schema()</code></pre>
+</details>
+</dd>
 <dt id="emuobject.Emu.Emu.schema"><code class="name flex">
 <span>def <span class="ident">schema</span></span>(<span>) ‑> dict</span>
 </code></dt>
@@ -346,38 +381,6 @@ def schema(cls) -&gt; dict:
 </dl>
 <h3>Methods</h3>
 <dl>
-<dt id="emuobject.Emu.Emu.allows"><code class="name flex">
-<span>def <span class="ident">allows</span></span>(<span>self, field: str) ‑> bool</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Returns True if the field is allowed (e.g., it exists in the schema()), False otherwise.</p>
-<p>Do not override this method.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>field</code></strong></dt>
-<dd>The field name you wish to check</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<p>True if the field is allowed, False otherwise.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def allows(self, field: str) -&gt; bool:
-    &#34;&#34;&#34;
-    Returns True if the field is allowed (e.g., it exists in the schema()), False otherwise.
-
-    Do not override this method.
-
-    Args:
-        field: The field name you wish to check
-
-    Returns:
-        True if the field is allowed, False otherwise.
-    &#34;&#34;&#34;
-    return field in self.schema()</code></pre>
-</details>
-</dd>
 <dt id="emuobject.Emu.Emu.definition"><code class="name flex">
 <span>def <span class="ident">definition</span></span>(<span>self, field) ‑> dict</span>
 </code></dt>

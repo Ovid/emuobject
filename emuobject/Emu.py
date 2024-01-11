@@ -93,7 +93,8 @@ class Emu(ABC):
             raise MissingForbiddenFieldError(field)
         return self._fields[field]
 
-    def allows(self, field: str) -> bool:
+    @classmethod
+    def allows(cls, field: str) -> bool:
         """
         Returns True if the field is allowed (e.g., it exists in the schema()), False otherwise.
 
@@ -105,7 +106,7 @@ class Emu(ABC):
         Returns:
             True if the field is allowed, False otherwise.
         """
-        return field in self.schema()
+        return field in cls.schema()
 
     def has(self, field: str) -> bool:
         """
