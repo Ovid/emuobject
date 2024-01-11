@@ -23,3 +23,6 @@ EmuObject is a Python library that provides type safe immutable objects::
     p = Person(name="John", age=42)
     print(p.get('name'))
     print(p.get('description')) # error, because we have no description
+
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+    :target: https://github.com/psf/black
