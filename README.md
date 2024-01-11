@@ -27,6 +27,15 @@ Type-safe immutable objects for Python
     print(p.get('description')) # error, because we have no description
 ```
 
+# Installation
+
+This is not on PyPI because it's my first Python module and I'm pretty darned
+sure I have some things wrong.
+
+```bash
+pip install git+https://github.com/Ovid/emuobject
+```
+
 # Rationale
 
 When working on large projects, there are two key issues which can crop up with object-oriented code:
