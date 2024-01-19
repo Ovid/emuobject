@@ -11,7 +11,10 @@ config = {
     'long_description': open('README.rst', 'r').read(),
     'license': 'MIT',
     'version': '0.0.1',
-    'install_requires': [],
+    'install_requires': [
+		'cerberus',
+        'termcolor',
+	],
     'classifiers': [
         "Programming Language :: Python",
         "Programming Language :: Python :: 2",
