@@ -9,7 +9,7 @@ _This is an work in progress._
 `emuobject` is a Python library that provides type-safe (Emu)table objects. (Forgive the pun.)
 
 ```python
-    from emuobject import Emu
+    from emuobject.Emu import Emu
 
     class Person(Emu):
         @classmethod
