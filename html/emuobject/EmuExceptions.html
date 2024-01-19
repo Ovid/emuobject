@@ -47,7 +47,14 @@ class MissingForbiddenFieldError(EmuError):
     &#34;&#34;&#34;Exception raised when a requested field is not allowed.&#34;&#34;&#34;
 
     def __init__(self, field) -&gt; None:
-        super().__init__(f&#34;Field &#39;{field}&#39; was requested, but not allowed&#34;)</code></pre>
+        super().__init__(f&#34;Field &#39;{field}&#39; was requested, but not allowed&#34;)
+
+
+class SchemaDefinitionError(EmuError):
+    &#34;&#34;&#34;Exception raised when constructor fields fail cerberus validation.&#34;&#34;&#34;
+
+    def __init__(self, message) -&gt; None:
+        super().__init__(message)</code></pre>
 </details>
 </section>
 <section>
@@ -87,6 +94,7 @@ class MissingForbiddenFieldError(EmuError):
 <ul class="hlist">
 <li><a title="emuobject.EmuExceptions.MissingAllowedFieldError" href="#emuobject.EmuExceptions.MissingAllowedFieldError">MissingAllowedFieldError</a></li>
 <li><a title="emuobject.EmuExceptions.MissingForbiddenFieldError" href="#emuobject.EmuExceptions.MissingForbiddenFieldError">MissingForbiddenFieldError</a></li>
+<li><a title="emuobject.EmuExceptions.SchemaDefinitionError" href="#emuobject.EmuExceptions.SchemaDefinitionError">SchemaDefinitionError</a></li>
 </ul>
 </dd>
 <dt id="emuobject.EmuExceptions.MissingAllowedFieldError"><code class="flex name class">
@@ -135,6 +143,29 @@ class MissingForbiddenFieldError(EmuError):
 <li>builtins.BaseException</li>
 </ul>
 </dd>
+<dt id="emuobject.EmuExceptions.SchemaDefinitionError"><code class="flex name class">
+<span>class <span class="ident">SchemaDefinitionError</span></span>
+<span>(</span><span>message)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Exception raised when constructor fields fail cerberus validation.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class SchemaDefinitionError(EmuError):
+    &#34;&#34;&#34;Exception raised when constructor fields fail cerberus validation.&#34;&#34;&#34;
+
+    def __init__(self, message) -&gt; None:
+        super().__init__(message)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="emuobject.EmuExceptions.EmuError" href="#emuobject.EmuExceptions.EmuError">EmuError</a></li>
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
 </dl>
 </section>
 </article>
@@ -159,6 +190,9 @@ class MissingForbiddenFieldError(EmuError):
 </li>
 <li>
 <h4><code><a title="emuobject.EmuExceptions.MissingForbiddenFieldError" href="#emuobject.EmuExceptions.MissingForbiddenFieldError">MissingForbiddenFieldError</a></code></h4>
+</li>
+<li>
+<h4><code><a title="emuobject.EmuExceptions.SchemaDefinitionError" href="#emuobject.EmuExceptions.SchemaDefinitionError">SchemaDefinitionError</a></code></h4>
 </li>
 </ul>
 </li>

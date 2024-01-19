@@ -29,7 +29,11 @@
 <pre><code class="python">from abc import ABC, abstractclassmethod
 from cerberus import Validator
 from termcolor import colored
-from emuobject.EmuExceptions import MissingAllowedFieldError, MissingForbiddenFieldError
+from emuobject.EmuExceptions import (
+    MissingAllowedFieldError,
+    MissingForbiddenFieldError,
+    SchemaDefinitionError,
+)
 
 
 class Emu(ABC):
@@ -67,7 +71,7 @@ class Emu(ABC):
         self._validator = Validator(self.schema(), require_all=True)
 
         if not self._validator.validate(self._fields):
-            raise TypeError(&#34;Invalid fields&#34;)
+            raise SchemaDefinitionError(&#34;The fields did not match the schema&#34;)
 
     @abstractclassmethod
     def schema(cls) -&gt; dict:
@@ -87,8 +91,6 @@ class Emu(ABC):
         &#34;&#34;&#34;
         Returns the definition for a single field. Returns None if the field is not defined.
 
-        Do not override this method.
-
         Args:
             field: The field name
 
@@ -102,8 +104,6 @@ class Emu(ABC):
     def get(self, field: str):
         &#34;&#34;&#34;
         Returns the value of the field, or raises an exception if the field is not allowed or not present.
-
-        Do not override this method.
 
         Args:
             field: The field name you wish to retrieve.
@@ -126,8 +126,6 @@ class Emu(ABC):
         &#34;&#34;&#34;
         Returns True if the field is allowed (e.g., it exists in the schema()), False otherwise.
 
-        Do not override this method.
-
         Args:
             field: The field name you wish to check
 
@@ -139,8 +137,6 @@ class Emu(ABC):
     def has(self, field: str) -&gt; bool:
         &#34;&#34;&#34;
         Returns True if the field is present in the object, False otherwise.
-
-        Do not override this method.
 
         Args:
             field: The field name
@@ -227,7 +223,7 @@ Traceback (most recent call last):
         self._validator = Validator(self.schema(), require_all=True)
 
         if not self._validator.validate(self._fields):
-            raise TypeError(&#34;Invalid fields&#34;)
+            raise SchemaDefinitionError(&#34;The fields did not match the schema&#34;)
 
     @abstractclassmethod
     def schema(cls) -&gt; dict:
@@ -247,8 +243,6 @@ Traceback (most recent call last):
         &#34;&#34;&#34;
         Returns the definition for a single field. Returns None if the field is not defined.
 
-        Do not override this method.
-
         Args:
             field: The field name
 
@@ -262,8 +256,6 @@ Traceback (most recent call last):
     def get(self, field: str):
         &#34;&#34;&#34;
         Returns the value of the field, or raises an exception if the field is not allowed or not present.
-
-        Do not override this method.
 
         Args:
             field: The field name you wish to retrieve.
@@ -286,8 +278,6 @@ Traceback (most recent call last):
         &#34;&#34;&#34;
         Returns True if the field is allowed (e.g., it exists in the schema()), False otherwise.
 
-        Do not override this method.
-
         Args:
             field: The field name you wish to check
 
@@ -299,8 +289,6 @@ Traceback (most recent call last):
     def has(self, field: str) -&gt; bool:
         &#34;&#34;&#34;
         Returns True if the field is present in the object, False otherwise.
-
-        Do not override this method.
 
         Args:
             field: The field name
@@ -321,7 +309,6 @@ Traceback (most recent call last):
 </code></dt>
 <dd>
 <div class="desc"><p>Returns True if the field is allowed (e.g., it exists in the schema()), False otherwise.</p>
-<p>Do not override this method.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>field</code></strong></dt>
@@ -337,8 +324,6 @@ Traceback (most recent call last):
 def allows(cls, field: str) -&gt; bool:
     &#34;&#34;&#34;
     Returns True if the field is allowed (e.g., it exists in the schema()), False otherwise.
-
-    Do not override this method.
 
     Args:
         field: The field name you wish to check
@@ -386,7 +371,6 @@ def schema(cls) -&gt; dict:
 </code></dt>
 <dd>
 <div class="desc"><p>Returns the definition for a single field. Returns None if the field is not defined.</p>
-<p>Do not override this method.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>field</code></strong></dt>
@@ -401,8 +385,6 @@ def schema(cls) -&gt; dict:
 <pre><code class="python">def definition(self, field) -&gt; dict or None:
     &#34;&#34;&#34;
     Returns the definition for a single field. Returns None if the field is not defined.
-
-    Do not override this method.
 
     Args:
         field: The field name
@@ -420,7 +402,6 @@ def schema(cls) -&gt; dict:
 </code></dt>
 <dd>
 <div class="desc"><p>Returns the value of the field, or raises an exception if the field is not allowed or not present.</p>
-<p>Do not override this method.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>field</code></strong></dt>
@@ -442,8 +423,6 @@ def schema(cls) -&gt; dict:
 <pre><code class="python">def get(self, field: str):
     &#34;&#34;&#34;
     Returns the value of the field, or raises an exception if the field is not allowed or not present.
-
-    Do not override this method.
 
     Args:
         field: The field name you wish to retrieve.
@@ -467,7 +446,6 @@ def schema(cls) -&gt; dict:
 </code></dt>
 <dd>
 <div class="desc"><p>Returns True if the field is present in the object, False otherwise.</p>
-<p>Do not override this method.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>field</code></strong></dt>
@@ -482,8 +460,6 @@ def schema(cls) -&gt; dict:
 <pre><code class="python">def has(self, field: str) -&gt; bool:
     &#34;&#34;&#34;
     Returns True if the field is present in the object, False otherwise.
-
-    Do not override this method.
 
     Args:
         field: The field name

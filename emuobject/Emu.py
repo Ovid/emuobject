@@ -1,7 +1,11 @@
 from abc import ABC, abstractclassmethod
 from cerberus import Validator
 from termcolor import colored
-from emuobject.EmuExceptions import MissingAllowedFieldError, MissingForbiddenFieldError
+from emuobject.EmuExceptions import (
+    MissingAllowedFieldError,
+    MissingForbiddenFieldError,
+    SchemaDefinitionError,
+)
 
 
 class Emu(ABC):
@@ -39,7 +43,7 @@ class Emu(ABC):
         self._validator = Validator(self.schema(), require_all=True)
 
         if not self._validator.validate(self._fields):
-            raise TypeError("Invalid fields")
+            raise SchemaDefinitionError("The fields did not match the schema")
 
     @abstractclassmethod
     def schema(cls) -> dict:
