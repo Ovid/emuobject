@@ -20,3 +20,10 @@ class MissingForbiddenFieldError(EmuError):
 
     def __init__(self, field) -> None:
         super().__init__(f"Field '{field}' was requested, but not allowed")
+
+
+class SchemaDefinitionError(EmuError):
+    """Exception raised when constructor fields fail cerberus validation."""
+
+    def __init__(self, message) -> None:
+        super().__init__(message)

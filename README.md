@@ -4,6 +4,8 @@ Type-safe immutable objects for Python
 
 # SYNOPSIS
 
+_This is an work in progress._
+
 `emuobject` is a Python library that provides type-safe (Emu)table objects. (Forgive the pun.)
 
 ```python

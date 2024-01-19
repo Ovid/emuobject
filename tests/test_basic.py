@@ -1,6 +1,10 @@
 import unittest
 from emuobject.Emu import Emu
-from emuobject.EmuExceptions import MissingAllowedFieldError, MissingForbiddenFieldError
+from emuobject.EmuExceptions import (
+    MissingAllowedFieldError,
+    MissingForbiddenFieldError,
+    SchemaDefinitionError,
+)
 
 
 class Person(Emu):
@@ -40,6 +44,16 @@ class TestBasic(unittest.TestCase):
 
         with self.assertRaises(MissingForbiddenFieldError):
             self.ovid.get("address")
+
+    def test_init(self):
+        with self.assertRaises(SchemaDefinitionError):
+            Person({"name": "Ovid", "age": "42"})
+
+        with self.assertRaises(SchemaDefinitionError):
+            Person({"name": "Ovid", "age": -1})
+
+        with self.assertRaises(SchemaDefinitionError):
+            Person({"name": "Ovid", "age": 42, "address": "123 Main St"})
 
 
 if __name__ == "__main__":
