@@ -59,8 +59,6 @@ class Emu(ABC):
         """
         Returns the definition for a single field. Returns None if the field is not defined.
 
-        Do not override this method.
-
         Args:
             field: The field name
 
@@ -74,8 +72,6 @@ class Emu(ABC):
     def get(self, field: str):
         """
         Returns the value of the field, or raises an exception if the field is not allowed or not present.
-
-        Do not override this method.
 
         Args:
             field: The field name you wish to retrieve.
@@ -98,8 +94,6 @@ class Emu(ABC):
         """
         Returns True if the field is allowed (e.g., it exists in the schema()), False otherwise.
 
-        Do not override this method.
-
         Args:
             field: The field name you wish to check
 
@@ -111,8 +105,6 @@ class Emu(ABC):
     def has(self, field: str) -> bool:
         """
         Returns True if the field is present in the object, False otherwise.
-
-        Do not override this method.
 
         Args:
             field: The field name
