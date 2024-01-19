@@ -5,9 +5,9 @@ from setuptools import setup, find_packages
 config = {
     'name': 'emuobject',
     'author': 'Ovid',
-    'author_email': 'ovid@cpan.org',
-    'url': '',
-    'description': '',
+    'author_email': 'curtis.poe@gmail.com',
+    'url': 'https://github.com/Ovid/emuobject',
+    'description': 'Type-safe, immutable objects',
     'long_description': open('README.rst', 'r').read(),
     'license': 'MIT',
     'version': '0.0.1',
