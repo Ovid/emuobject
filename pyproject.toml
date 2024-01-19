@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "emuobject"
-version = "0.1.0"
+version = "0.0.1"
 description = "A type-safe immutable object for Python."
 authors = ["Ovid <curtis.poe@gmail.com>"]
 license = "MIT"
